@@ -10,6 +10,7 @@ import {
   Query,
   UsePipes,
   ValidationPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task, TaskStatus } from './task.model';
@@ -28,8 +29,12 @@ export class TasksController {
   }
 
   @Get('/:id')
-  getTaskById(@Param('id') id: string) {
-    return this.tasksService.getTaskById(id);
+  getTaskById(@Param('id') id: string): Task {
+    const found = this.tasksService.getTaskById(id);
+    if (!found) {
+      throw new NotFoundException(`task is not found ID: ${id}`);
+    }
+    return found;
   }
 
   @Post()
